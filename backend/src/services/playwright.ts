@@ -43,10 +43,9 @@ export async function publishToMarketplace(userId: string, listingData: { title:
       if (filename) {
         const localFilePath = path.join(__dirname, '../../uploads', filename);
         if (fs.existsSync(localFilePath)) {
-          // FB uses an input[type="file"] for photo uploads. We can usually target it directly.
-          // Note: The specific aria-label or selector for FB Marketplace's Add Photos button might vary, 
-          // but an input type file is standard.
-          const fileInput = page.locator('input[type="file"]');
+          // FB uses multiple input[type="file"] (one for images, one for video).
+          // We target the one specifically for images, or fallback to the first one.
+          const fileInput = page.locator('input[type="file"][accept*="image"]').first();
           await fileInput.setInputFiles(localFilePath);
           await page.waitForTimeout(2000); // Wait for upload preview to render
         } else {
