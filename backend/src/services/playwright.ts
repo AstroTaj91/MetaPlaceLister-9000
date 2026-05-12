@@ -55,18 +55,23 @@ export async function publishToMarketplace(userId: string, listingData: { title:
     }
 
     console.log('Entering Title...');
-    await page.getByLabel('Title').fill(listingData.title);
+    const titleInput = page.getByLabel('Title', { exact: true }).first();
+    await titleInput.click({ force: true });
+    await titleInput.fill(listingData.title, { force: true });
     
     console.log('Entering Price...');
-    await page.getByLabel('Price').fill(listingData.price);
+    const priceInput = page.getByLabel('Price', { exact: true }).first();
+    await priceInput.click({ force: true });
+    await priceInput.fill(listingData.price, { force: true });
     
     console.log('Entering Description...');
-    // FB Marketplace description can sometimes be tricky with rich text.
-    await page.getByLabel('Description').pressSequentially(listingData.description, { delay: 10 });
+    const descInput = page.getByLabel('Description', { exact: true }).first();
+    await descInput.click({ force: true });
+    await descInput.pressSequentially(listingData.description, { delay: 10 });
     
     console.log('Clicking the Publish button...');
     // We are now in production, so we actually click it!
-    await page.getByRole('button', { name: 'Publish' }).click();
+    await page.getByRole('button', { name: 'Publish' }).first().click({ force: true });
 
     // Wait for the publish action to complete (FB redirects or shows a success state)
     await page.waitForTimeout(5000);
