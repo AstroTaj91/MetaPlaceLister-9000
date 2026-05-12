@@ -33,9 +33,13 @@ export function FacebookConnectModal() {
         throw new Error('Invalid JSON format. Please paste the exact JSON array exported from your extension.');
       }
 
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/auth/facebook`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ cookies: parsedCookies }),
       });
 
