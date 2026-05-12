@@ -12,8 +12,21 @@ export async function publishToMarketplace(userId: string, listingData: { title:
   const browser = await chromium.launch({ headless: true }); // Must be true for production server
   const context = await browser.newContext();
   
+  // Sanitize cookies for Playwright's strict sameSite validation
+  const sanitizedCookies = cookies.map((cookie: any) => {
+    const validSameSite = ['Strict', 'Lax', 'None'];
+    if (cookie.sameSite && !validSameSite.includes(cookie.sameSite)) {
+      if (cookie.sameSite.toLowerCase() === 'no_restriction' || cookie.sameSite === 'unspecified') {
+        cookie.sameSite = 'None';
+      } else {
+        delete cookie.sameSite; // Strip invalid attributes entirely
+      }
+    }
+    return cookie;
+  });
+
   // Inject the encrypted cookies to bypass login
-  await context.addCookies(cookies);
+  await context.addCookies(sanitizedCookies);
 
   const page = await context.newPage();
   
