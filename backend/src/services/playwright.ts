@@ -9,7 +9,16 @@ export async function publishToMarketplace(userId: string, listingData: { title:
   const cookies = await getDecryptedCookies(userId);
   
   console.log('Launching Playwright in headless mode...');
-  const browser = await chromium.launch({ headless: true }); // Must be true for production server
+  const browser = await chromium.launch({ 
+    headless: true, // Must be true for production server
+    args: [
+      '--disable-dev-shm-usage', // Critical for Docker/Render to prevent OOM
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      '--single-process' // Helps reduce memory footprint on small instances
+    ]
+  });
   const context = await browser.newContext();
   
   // Sanitize cookies for Playwright's strict sameSite validation
