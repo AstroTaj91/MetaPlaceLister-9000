@@ -14,12 +14,10 @@ export async function publishToMarketplace(userId: string, listingData: { title:
   
   // Sanitize cookies for Playwright's strict sameSite validation
   const sanitizedCookies = cookies.map((cookie: any) => {
-    const validSameSite = ['Strict', 'Lax', 'None'];
-    if (cookie.sameSite && !validSameSite.includes(cookie.sameSite)) {
-      if (cookie.sameSite.toLowerCase() === 'no_restriction' || cookie.sameSite === 'unspecified') {
-        cookie.sameSite = 'None';
-      } else {
-        delete cookie.sameSite; // Strip invalid attributes entirely
+    if ('sameSite' in cookie) {
+      const validSameSite = ['Strict', 'Lax', 'None'];
+      if (!validSameSite.includes(cookie.sameSite)) {
+         delete cookie.sameSite;
       }
     }
     return cookie;
